@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>BPIT Library — Demo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- SIMPLE LOGIN -->
+  <div id="loginPage" class="page">
+    <div class="card center">
+      <img src="assets/bpit_logo-removebg-preview.png" alt="BPIT logo" class="logo" />
+      <h1>LIBRARY MANAGEMENT SYSTEM</h1>
+      <p class="subtitle">Bhagwan Parshuram Institute of Technology</p>
+
+      <div class="tabs">
+        <button id="tabLogin" class="active">Login</button>
+        <button id="tabSignup">Sign Up</button>
+      </div>
+
+      <div id="loginForm" class="form">
+        <label>Email</label>
+        <input id="loginEmail" value="admin@bpitindia.edu.in" />
+        <label>Password</label>
+        <input id="loginPassword" type="password" placeholder="Your Password" />
+        <button id="signInBtn" class="primary">Sign In</button>
+      </div>
+
+      <div id="signupForm" class="form hidden">
+        <label>Full Name</label>
+        <input id="signupName" />
+        <label>Email</label>
+        <input id="signupEmail" />
+        <label>Password</label>
+        <input id="signupPassword" type="password" />
+        <button id="signUpBtn" class="primary">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashPage" class="page hidden">
+    <header class="dashHeader">
+      <div class="brand"><img src="assets/bpit_logo-removebg-preview.png" alt="BPIT logo"/><span class="logoBlock"></span><div><h2>LIBRARY MANAGEMENT SYSTEM</h2><small>Bhagwan Parshuram Institute of Technology</small></div></div>
+      <button id="logoutBtn" class="outline">LogOut</button>
+    </header>
+
+    <main class="dashMain">
+      <section class="statsRow">
+        <div class="statCard"><h3>Total Books</h3><div id="totalBooks">0</div></div>
+        <div class="statCard"><h3>Total Students</h3><div id="totalStudents">0</div></div>
+        <div class="statCard"><h3>Issued Books</h3><div id="issuedBooksCount">0</div></div>
+      </section>
+
+      <nav class="tabsRow">
+        <button class="dashTab active" data-tab="books">Books</button>
+        <button class="dashTab" data-tab="students">Students</button>
+        <button class="dashTab" data-tab="issued">Issued Books</button>
+      </nav>
+
+      <section id="booksTab" class="tabContent">
+        <h3>Search and Manage Books</h3>
+        <div class="controls">
+          <input id="bookSearch" placeholder="Search by title or subject" />
+          <button id="addBookBtn">Add Book</button>
+        </div>
+        <table class="dataTable">
+          <thead><tr><th>Title</th><th>Subject</th><th>Code</th><th>Availability</th><th>Actions</th></tr></thead>
+          <tbody id="booksTable"></tbody>
+        </table>
+      </section>
+
+      <section id="studentsTab" class="tabContent hidden">
+        <h3>Manage Student Record</h3>
+        <div class="controls">
+          <input id="studentSearch" placeholder="Search by name or enrollment" />
+          <button id="addStudentBtn">Add Student</button>
+        </div>
+        <table class="dataTable">
+          <thead><tr><th>Name</th><th>Enrollment No.</th><th>Department</th><th>Phone No.</th><th>Email</th><th>Actions</th></tr></thead>
+          <tbody id="studentsTable"></tbody>
+        </table>
+      </section>
+
+      <section id="issuedTab" class="tabContent hidden">
+        <h3>Issued Books</h3>
+        <table class="dataTable">
+          <thead><tr><th>Book Title</th><th>Student</th><th>Enrollment</th><th>Issued On</th><th>Actions</th></tr></thead>
+          <tbody id="issuedTable"></tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal area (simple prompt-based modals) -->
+  <div id="modal" class="hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
