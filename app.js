@@ -110,6 +110,15 @@ class Library {
     this.save();
   }
 
+  updateBook(id, newTitle, newSubject, newCode) {
+    const book = this.books.find(b => b.id === id);
+    if (!book) throw new Error('Book not found');
+    book.title = newTitle;
+    book.subject = newSubject;
+    book.code = newCode;
+    this.save();
+  }
+
   // Students
   addStudent(name, enrollment, department, phone, email) {
     const s = new Student(this._uid(), name, enrollment, department, phone, email);
@@ -296,13 +305,14 @@ function renderBooksTable(){
   }
   list.forEach(b => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `
+   tr.innerHTML = `
       <td>${escapeHTML(b.title)}</td>
       <td>${escapeHTML(b.subject)}</td>
       <td>${escapeHTML(b.code)}</td>
       <td>${b.available ? 'Available' : 'Issued'}</td>
       <td>
         ${b.available ? `<button class="tiny" data-act="issue" data-id="${b.id}">Issue</button>` : ''}
+        <button class="tiny" data-act="edit" data-id="${b.id}">Edit</button>
         <button class="tiny" data-act="del" data-id="${b.id}">Delete</button>
       </td>
     `;
@@ -325,6 +335,21 @@ function renderBooksTable(){
         if (!student) { alert('Student not found. Use exact enrollment.'); return; }
         try {
           library.issueBook(id, student.id);
+          renderAll();
+        } catch(err) { alert(err.message); }
+      }
+      else if (act === 'edit') {
+        const book = library.books.find(b => b.id === id);
+        if (!book) return;
+
+        const newTitle = prompt('New Title:', book.title);
+        if (newTitle === null) return; // User clicked Cancel
+
+        const newSubject = prompt('New Subject:', book.subject);
+        const newCode = prompt('New Code:', book.code);
+
+        try {
+          library.updateBook(id, newTitle, newSubject, newCode);
           renderAll();
         } catch(err) { alert(err.message); }
       }
