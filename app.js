@@ -27,6 +27,11 @@ class IssueRecord {
     this.bookId = bookId;
     this.studentId = studentId;
     this.issuedOn = issuedOn;
+
+    // NEW: Calculate Due Date (14 days from issue)
+    const due = new Date(issuedOn);
+    due.setDate(due.getDate() + 14); 
+    this.dueDate = due.toISOString(); 
   }
 }
 
@@ -371,11 +376,12 @@ function renderIssuedTable(){
     const book = library.books.find(b => b.id === rec.bookId) || { title: 'Unknown' };
     const student = library.students.find(s => s.id === rec.studentId) || { name: 'Unknown', enrollment: '' };
     const tr = document.createElement('tr');
-    tr.innerHTML = `
+   tr.innerHTML = `
       <td>${escapeHTML(book.title)}</td>
       <td>${escapeHTML(student.name)}</td>
       <td>${escapeHTML(student.enrollment)}</td>
       <td>${new Date(rec.issuedOn).toLocaleDateString()}</td>
+      <td>${rec.dueDate ? new Date(rec.dueDate).toLocaleDateString() : 'N/A'}</td>
       <td><button class="tiny" data-act="return" data-id="${rec.id}">Return</button></td>
     `;
     issuedTable.appendChild(tr);
