@@ -52,46 +52,60 @@ class Library {
   }
 
   load() {
-    const b = JSON.parse(localStorage.getItem('lib_books') || 'null');
-    const s = JSON.parse(localStorage.getItem('lib_students') || 'null');
-    const i = JSON.parse(localStorage.getItem('lib_issues') || 'null');
+  let b = JSON.parse(localStorage.getItem('lib_books') || '[]');
+  let s = JSON.parse(localStorage.getItem('lib_students') || '[]');
+  let i = JSON.parse(localStorage.getItem('lib_issues') || '[]');
 
-    if (b && s && i) {
-      this.books = b;
-      this.students = s;
-      this.issues = i;
-    } else {
-      // first-run: seed with sample data
-      this.seedSample();
-      this.save();
-    }
+  if (b.length && s.length && i.length) {
+    // recreate objects properly
+    this.books = b.map(x => new Book(x.id, x.title, x.subject, x.code, x.available));
+    this.students = s.map(x => new Student(x.id, x.name, x.enrollment, x.department, x.phone, x.email));
+    this.issues = i.map(x => new IssueRecord(x.id, x.bookId, x.studentId, x.issuedOn));
+  } else {
+    // first-run: seed sample data
+    this.seedSample();
+    this.save();
   }
+}
+.save();
+    }
+  } catch(err) {
+    console.error('Failed to load library data:', err);
+    this.seedSample();
+    this.save();
+  }
+}
+
+  } catch(err) {
+    console.error('Failed to load library data:', err);
+    this.seedSample();
+    this.save();
+  }
+}
+
 
   seedSample() {
-    // 6 sample books
     this.books = [
-      new Book(this._uid(), 'Programming in C', 'Computer Science', 'CS101', true),
-      new Book(this._uid(), 'Discrete Mathematics', 'Mathematics', 'MA102', true),
-      new Book(this._uid(), 'Data Structures', 'Computer Science', 'CS201', true),
-      new Book(this._uid(), 'Digital Logic', 'Electronics', 'EC103', true),
-      new Book(this._uid(), 'English Communication', 'Language', 'HS100', true),
-      new Book(this._uid(), 'Calculus', 'Mathematics', 'MA101', true)
+      new Book(this._uid(), 'Object-Oriented Programming in cpp', 'Computer Science', 'CIC-211', true),
+      new Book(this._uid(), 'Discrete Mathematics', 'Mathematics', 'CIC-205', true),
+      new Book(this._uid(), 'Data Structures', 'Computer Science', 'CIC-209', true),
+      new Book(this._uid(), 'Digital Logic and Computer Design', 'Electronics', 'ECC-207', true),
+      new Book(this._uid(), 'Indian Knowledge System', 'History', 'HS-203', true),
+      new Book(this._uid(), 'computational Mathematics', 'Mathematics', 'ES-201', true)
     ];
 
-    // 5 sample students
     this.students = [
       new Student(this._uid(), 'Aakriti Arya', 'BPIT2025001', 'CSE', '9876543210', 'aakriti@example.com'),
-      new Student(this._uid(), 'Riya Sharma', 'BPIT2025002', 'ECE', '9876501234', 'riya@example.com'),
-      new Student(this._uid(), 'Vikram Singh', 'BPIT2025003', 'ME', '9876512345', 'vikram@example.com'),
-      new Student(this._uid(), 'Rahul Kumar', 'BPIT2025004', 'CSE', '9876523456', 'rahul@example.com'),
-      new Student(this._uid(), 'Meera Joshi', 'BPIT2025005', 'IT', '9876534567', 'meera@example.com')
+      new Student(this._uid(), 'Janvi Mathur', 'BPIT2025002', 'CSEDS', '9876501234', 'janvi2006@example.com'),
+      new Student(this._uid(), 'Vanya Arora', 'BPIT2025003', 'CSEDS', '9876512345', 'vanya26@example.com'),
+      new Student(this._uid(), 'Nishtha Sood', 'BPIT2025004', 'IT-C', '9876523456', 'nishtha14@example.com'),
+      new Student(this._uid(), 'Aadhya Sharma', 'BPIT2025005', 'IT-B', '9876534567', 'aadhya24@example.com')
     ];
 
-    this.issues = []; // none issued initially
+    this.issues = [];
   }
 
   _uid() {
-    // simple unique id
     return 'id' + Math.random().toString(36).substr(2, 9);
   }
 
@@ -102,8 +116,8 @@ class Library {
     this.save();
     return book;
   }
+
   removeBook(bookId) {
-    // remove only if not issued
     const isIssued = this.issues.some(i => i.bookId === bookId);
     if (isIssued) throw new Error('Book is issued, cannot delete');
     this.books = this.books.filter(b => b.id !== bookId);
@@ -126,6 +140,7 @@ class Library {
     this.save();
     return s;
   }
+
   removeStudent(studentId) {
     const hasIssued = this.issues.some(i => i.studentId === studentId);
     if (hasIssued) throw new Error('Student has issued books, cannot delete');
@@ -158,25 +173,34 @@ class Library {
     this.save();
   }
 
-  // helpers
   getIssuedCount() { return this.issues.length; }
   getTotalBooks() { return this.books.length; }
   getTotalStudents() { return this.students.length; }
 }
 
+/* ---------- LOGIN UPDATED HERE ---------- */
+
+/* Simple "auth" — now accepts ANY credentials and stores them for demo */
+const Auth = {
+  users: [],   // store registered users
+
+  login(email, password) {
+    // Allow anyone to log in (no checks)
+    return true;
+  },
+
+  signup(name, email, password) {
+    // Save the user info for demo (optional)
+    this.users.push({ name, email, password });
+    return true; // always succeeds
+  }
+};
+
+
 /* ---------- UI / App Logic ---------- */
 
 const library = new Library();
 
-/* Simple "auth" — single admin account */
-const Auth = {
-  login(email, password) {
-    // hard-coded admin for demo
-    return email === 'admin@bpitindia.edu.in' && password === 'admin123';
-  }
-}
-
-/* --- DOM references --- */
 const loginPage = document.getElementById('loginPage');
 const dashPage = document.getElementById('dashPage');
 
@@ -203,9 +227,9 @@ const addStudentBtn = document.getElementById('addStudentBtn');
 
 /* --- Events --- */
 
-// login & signup tab toggle on login page
 document.getElementById('tabLogin').addEventListener('click', ()=> toggleLoginTabs(true));
 document.getElementById('tabSignup').addEventListener('click', ()=> toggleLoginTabs(false));
+
 function toggleLoginTabs(isLogin){
   document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
   document.getElementById('signupForm').classList.toggle('hidden', isLogin);
@@ -213,29 +237,26 @@ function toggleLoginTabs(isLogin){
   document.getElementById('tabSignup').classList.toggle('active', !isLogin);
 }
 
-// sign in
 signInBtn.addEventListener('click', ()=>{
   const email = document.getElementById('loginEmail').value;
   const pwd = document.getElementById('loginPassword').value;
+  
   if (Auth.login(email,pwd)){
     showDashboard();
   } else {
-    alert('Wrong admin credentials. For demo use admin@bpitindia.edu.in / admin123');
+    alert('Login failed');
   }
 });
 
-// sign up (very simple — stores nothing for demo)
 document.getElementById('signUpBtn').addEventListener('click', ()=>{
-  alert('Sign up not connected in demo. Use admin account to enter dashboard.');
+  alert('Sign up not connected in demo.');
 });
 
-// logout
 logoutBtn.addEventListener('click', ()=> {
   dashPage.classList.add('hidden');
   loginPage.classList.remove('hidden');
 });
 
-// tab switching
 allTabBtns.forEach(b => b.addEventListener('click', (e) => {
   allTabBtns.forEach(x=>x.classList.remove('active'));
   e.currentTarget.classList.add('active');
@@ -248,7 +269,6 @@ function showTab(tabName){
   document.getElementById('issuedTab').classList.toggle('hidden', tabName !== 'issued');
 }
 
-/* add / search */
 addBookBtn.addEventListener('click', ()=> {
   const title = prompt('Book Title:');
   if (!title) return;
@@ -273,6 +293,7 @@ bookSearch.addEventListener('input', renderBooksTable);
 studentSearch.addEventListener('input', renderStudentsTable);
 
 /* --- Rendering --- */
+
 function showDashboard(){
   loginPage.classList.add('hidden');
   dashPage.classList.remove('hidden');
@@ -299,13 +320,15 @@ function renderBooksTable(){
     if (!q) return true;
     return b.title.toLowerCase().includes(q) || b.subject.toLowerCase().includes(q) || b.code.toLowerCase().includes(q);
   });
+
   if (list.length === 0) {
     booksTable.innerHTML = `<tr><td colspan="5">No books found.</td></tr>`;
     return;
   }
+
   list.forEach(b => {
     const tr = document.createElement('tr');
-   tr.innerHTML = `
+    tr.innerHTML = `
       <td>${escapeHTML(b.title)}</td>
       <td>${escapeHTML(b.subject)}</td>
       <td>${escapeHTML(b.code)}</td>
@@ -319,31 +342,35 @@ function renderBooksTable(){
     booksTable.appendChild(tr);
   });
 
-  // attach actions
   booksTable.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = e.currentTarget.dataset.id;
       const act = e.currentTarget.dataset.act;
+
       if (act === 'del') {
         try { library.removeBook(id); renderAll(); }
         catch(err){ alert(err.message); }
-      } else if (act === 'issue') {
-        // pick a student (simple)
-        const studentEnrollment = prompt('Enter student enrollment number to issue to: (e.g. BPIT2025001)');
+      }
+
+      else if (act === 'issue') {
+        const studentEnrollment = prompt('Enter student enrollment number:');
         if (!studentEnrollment) return;
+
         const student = library.students.find(s => s.enrollment === studentEnrollment);
-        if (!student) { alert('Student not found. Use exact enrollment.'); return; }
+        if (!student) { alert('Student not found'); return; }
+
         try {
           library.issueBook(id, student.id);
           renderAll();
         } catch(err) { alert(err.message); }
       }
+
       else if (act === 'edit') {
         const book = library.books.find(b => b.id === id);
         if (!book) return;
 
         const newTitle = prompt('New Title:', book.title);
-        if (newTitle === null) return; // User clicked Cancel
+        if (newTitle === null) return;
 
         const newSubject = prompt('New Subject:', book.subject);
         const newCode = prompt('New Code:', book.code);
@@ -360,14 +387,17 @@ function renderBooksTable(){
 function renderStudentsTable(){
   const q = studentSearch.value.trim().toLowerCase();
   studentsTable.innerHTML = '';
+
   const list = library.students.filter(s => {
     if (!q) return true;
     return s.name.toLowerCase().includes(q) || s.enrollment.toLowerCase().includes(q);
   });
+
   if (list.length === 0) {
     studentsTable.innerHTML = `<tr><td colspan="6">No students found.</td></tr>`;
     return;
   }
+
   list.forEach(s => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -376,12 +406,11 @@ function renderStudentsTable(){
       <td>${escapeHTML(s.department)}</td>
       <td>${escapeHTML(s.phone)}</td>
       <td>${escapeHTML(s.email)}</td>
-      <td>
-        <button class="tiny" data-act="del" data-id="${s.id}">Delete</button>
-      </td>
+      <td><button class="tiny" data-act="del" data-id="${s.id}">Delete</button></td>
     `;
     studentsTable.appendChild(tr);
   });
+
   studentsTable.querySelectorAll('button').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const id = e.currentTarget.dataset.id;
@@ -393,15 +422,18 @@ function renderStudentsTable(){
 
 function renderIssuedTable(){
   issuedTable.innerHTML = '';
+
   if (library.issues.length === 0){
     issuedTable.innerHTML = `<tr><td colspan="5">No issued books.</td></tr>`;
     return;
   }
+
   library.issues.forEach(rec => {
     const book = library.books.find(b => b.id === rec.bookId) || { title: 'Unknown' };
     const student = library.students.find(s => s.id === rec.studentId) || { name: 'Unknown', enrollment: '' };
+
     const tr = document.createElement('tr');
-   tr.innerHTML = `
+    tr.innerHTML = `
       <td>${escapeHTML(book.title)}</td>
       <td>${escapeHTML(student.name)}</td>
       <td>${escapeHTML(student.enrollment)}</td>
@@ -423,10 +455,12 @@ function renderIssuedTable(){
   });
 }
 
-/* small helper */
 function escapeHTML(s = '') {
-  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[m]));
 }
-
-/* On first load, show login page. But if you want to auto-open dashboard uncomment below */
-// showDashboard();
