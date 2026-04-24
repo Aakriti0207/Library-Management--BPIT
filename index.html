@@ -41,7 +41,14 @@
   <!-- DASHBOARD -->
   <div id="dashPage" class="page hidden">
     <header class="dashHeader">
-      <div class="brand"><img src="assets/bpit_logo-removebg-preview.png" alt="BPIT logo"/><span class="logoBlock"></span><div><h2>LIBRARY MANAGEMENT SYSTEM</h2><small>Bhagwan Parshuram Institute of Technology</small></div></div>
+      <div class="brand">
+        <img src="assets/bpit_logo-removebg-preview.png" alt="BPIT logo"/>
+        <span class="logoBlock"></span>
+        <div>
+          <h2>LIBRARY MANAGEMENT SYSTEM</h2>
+          <small>Bhagwan Parshuram Institute of Technology</small>
+        </div>
+      </div>
       <button id="logoutBtn" class="outline">LogOut</button>
     </header>
 
@@ -85,16 +92,153 @@
       <section id="issuedTab" class="tabContent hidden">
         <h3>Issued Books</h3>
         <table class="dataTable">
-          <thead><tr><th>Book Title</th><th>Student</th><th>Enrollment</th><th>Issued On</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Book Title</th><th>Student</th><th>Enrollment</th><th>Issued On</th><th>Due Date</th><th>Actions</th></tr></thead>
           <tbody id="issuedTable"></tbody>
         </table>
       </section>
     </main>
   </div>
 
-  <!-- Modal area (simple prompt-based modals) -->
-  <div id="modal" class="hidden"></div>
+  <script>
+/* ---------- AUTH (anyone can login/signup) ---------- */
+const Auth = {
+  users: [],
+  login: function(email, password) {
+    return true; // anyone can login
+  },
+  signup: function(name, email, password) {
+    if(name && email && password) {
+      this.users.push({ name, email, password });
+      return true;
+    }
+    return false;
+  }
+};
 
-  <script src="app.js"></script>
+/* ---------- LOGIN / SIGNUP LOGIC ---------- */
+const signInBtn = document.getElementById('signInBtn');
+const signUpBtn = document.getElementById('signUpBtn');
+const loginPage = document.getElementById('loginPage');
+const dashPage = document.getElementById('dashPage');
+
+const tabLogin = document.getElementById('tabLogin');
+const tabSignup = document.getElementById('tabSignup');
+const loginForm = document.getElementById('loginForm');
+const signupForm = document.getElementById('signupForm');
+
+// Toggle tabs
+tabLogin.addEventListener('click', () => {
+  loginForm.classList.remove('hidden');
+  signupForm.classList.add('hidden');
+  tabLogin.classList.add('active');
+  tabSignup.classList.remove('active');
+});
+
+tabSignup.addEventListener('click', () => {
+  signupForm.classList.remove('hidden');
+  loginForm.classList.add('hidden');
+  tabSignup.classList.add('active');
+  tabLogin.classList.remove('active');
+});
+
+// Login
+signInBtn.addEventListener('click', () => {
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  if(Auth.login(email, password)) {
+    loginPage.classList.add('hidden');
+    dashPage.classList.remove('hidden');
+    // initialize dashboard here
+    renderAll();
+  } else {
+    alert('Login failed');
+  }
+});
+
+// Signup
+signUpBtn.addEventListener('click', () => {
+  const name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail').value;
+  const password = document.getElementById('signupPassword').value;
+  if(!name || !email || !password){
+    alert('Please fill all fields');
+    return;
+  }
+  Auth.signup(name,email,password);
+  alert('Sign-up successful! You can now login.');
+  loginForm.classList.remove('hidden');
+  signupForm.classList.add('hidden');
+  tabLogin.classList.add('active');
+  tabSignup.classList.remove('active');
+});
+
+/* ---------- LOGOUT ---------- */
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  dashPage.classList.add('hidden');
+  loginPage.classList.remove('hidden');
+});
+
+/* ---------- DASHBOARD TABS ---------- */
+const allTabBtns = document.querySelectorAll('.dashTab');
+allTabBtns.forEach(b => b.addEventListener('click', (e) => {
+  allTabBtns.forEach(x => x.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  showTab(e.currentTarget.dataset.tab);
+}));
+
+function showTab(tabName) {
+  document.getElementById('booksTab').classList.toggle('hidden', tabName !== 'books');
+  document.getElementById('studentsTab').classList.toggle('hidden', tabName !== 'students');
+  document.getElementById('issuedTab').classList.toggle('hidden', tabName !== 'issued');
+}
+
+/* ---------- DASHBOARD DATA (SAMPLE) ---------- */
+const library = {
+  books: [
+    { id:'b1', title:'OOP in C++', subject:'Computer Science', code:'CIC-211', available:true },
+    { id:'b2', title:'Discrete Mathematics', subject:'Math', code:'CIC-205', available:true },
+  ],
+  students: [
+    { id:'s1', name:'Aakriti Arya', enrollment:'BPIT2025001', department:'CSE', phone:'9876543210', email:'aakriti@example.com' },
+    { id:'s2', name:'Janvi Mathur', enrollment:'BPIT2025002', department:'CSE', phone:'9876501234', email:'janvi@example.com' }
+  ],
+  issues: []
+};
+
+function renderAll(){
+  // stats
+  document.getElementById('totalBooks').textContent = library.books.length;
+  document.getElementById('totalStudents').textContent = library.students.length;
+  document.getElementById('issuedBooksCount').textContent = library.issues.length;
+
+  // books
+  const booksTable = document.getElementById('booksTable');
+  booksTable.innerHTML = '';
+  library.books.forEach(b=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${b.title}</td><td>${b.subject}</td><td>${b.code}</td><td>${b.available?'Available':'Issued'}</td><td>-</td>`;
+    booksTable.appendChild(tr);
+  });
+
+  // students
+  const studentsTable = document.getElementById('studentsTable');
+  studentsTable.innerHTML = '';
+  library.students.forEach(s=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s.name}</td><td>${s.enrollment}</td><td>${s.department}</td><td>${s.phone}</td><td>${s.email}</td><td>-</td>`;
+    studentsTable.appendChild(tr);
+  });
+
+  // issued
+  const issuedTable = document.getElementById('issuedTable');
+  issuedTable.innerHTML = '';
+  library.issues.forEach(i=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${i.book}</td><td>${i.student}</td><td>${i.enrollment}</td><td>${i.issuedOn}</td><td>${i.dueDate}</td><td>-</td>`;
+    issuedTable.appendChild(tr);
+  });
+}
+  </script>
 </body>
 </html>
+
