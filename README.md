@@ -1,46 +1,68 @@
 # 📚 Library Management System (JavaScript OOP)
 
-A simple library management system built entirely using **Object-Oriented Programming (OOP)** concepts in JavaScript.  
-This project demonstrates how classes, objects, methods, and encapsulation can be used to structure a clean, modular program.
+A lightweight library management system built using **Object-Oriented Programming (OOP)** principles in JavaScript.  
+This project focuses on structuring application logic using classes, objects, and methods to simulate real-world library operations.
 
 ---
 
-## 🚀 Features
+## 🚀 Live Demo
 
-- Add new books to the library  
-- Issue/borrow books  
-- Track available vs. issued books  
-- View all books in an organized list
-
---- 
-
-## 🛠 Technologies Used
-
-- JavaScript 
-- Object-Oriented Programming (Classes, Objects, Methods)
+👉 https://library-management-bpit.vercel.app/
 
 ---
 
-## 🧠 Concepts Practiced
+## 🧠 Core Features
 
-- Class-based design  
-- Object creation & manipulation  
-- Encapsulation of data  
-- Method-based interactions  
-- Modular program structure  
+- ➕ Add new books to the library  
+- 📖 Issue / borrow books  
+- 🔄 Track available vs issued books  
+- 📋 View all books in a structured list  
 
 ---
+
+## 🛠️ Tech Stack
+
+- **Language:** JavaScript  
+- **Paradigm:** Object-Oriented Programming (OOP)  
+- **Frontend:** HTML, CSS  
+
+---
+
+## 🧠 OOP Concepts Demonstrated
+
+- Class-based design for managing books and library state  
+- Object creation and manipulation  
+- Encapsulation of data and behavior  
+- Method-driven interactions for operations (add, issue, track)  
+- Modular code structure for scalability  
+
+---
+
+## 📸 Screenshots
+
+<img width="1919" height="916" alt="image" src="https://github.com/user-attachments/assets/3e13da87-1abc-4b19-8771-34e72d305c68" />
+<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/debff22e-5902-48de-ab3d-0efe68f060fc" />
+
+
+
+---
+
+## ⚙️ Installation & Setup
+
+```bash
+git clone https://github.com/Aakriti0207/library-management.git
+cd library-management
+npm install
+npm run dev
+```
 
 💡 Future Improvements
+Add categories/genres for books
+Persist data using localStorage
+Add edit/delete functionality
+Extend into a full-stack application
 
-Add categories or genres
-Save books using localStorage
-Add delete/edit functionality
-Convert to a full-stack app 
 
----
-
-✨ Author
+👩‍💻 Author
 Aakriti Arya
-Aspiring Software Developer | C++ • DSA • Web Dev
-
+GitHub: https://github.com/Aakriti0207
